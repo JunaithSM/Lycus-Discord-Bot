@@ -1,9 +1,18 @@
 require('dotenv').config();
-const { Client, GatewayIntentBits, Events, ActivityType } = require('discord.js');
+const { Client, GatewayIntentBits, Events, ActivityType, PermissionFlagsBits } = require('discord.js');
 const db = require('./database');
 const { deployCommands } = require('./deploy-commands');
 const { startScheduler } = require('./scheduler');
 const { startWebServer } = require('./web');
+
+// Load config safely with defaults
+let config = {
+  managerRoleId: '1469553313979699375'
+};
+try {
+  const userConfig = require('./config.json');
+  config = { ...config, ...userConfig };
+} catch (e) {}
 
 // Command handlers mapping
 const commands = {
@@ -27,7 +36,7 @@ client.once(Events.ClientReady, async () => {
   
   // Set custom activity
   client.user.setActivity({
-    name: 'deadlines...',
+    name: 'Deadlines...',
     type: ActivityType.Watching
   });
 
@@ -49,7 +58,37 @@ client.once(Events.ClientReady, async () => {
 
 // Interaction Handling (Slash commands and Autocomplete)
 client.on(Events.InteractionCreate, async interaction => {
-  // 1. Handle autocomplete requests for ID fields
+  // 1. Enforce that the command must be used within a guild
+  if (!interaction.guild) {
+    if (interaction.isChatInputCommand()) {
+      return interaction.reply({
+        content: '❌ This command can only be used within a guild server.',
+        ephemeral: true
+      });
+    }
+    return;
+  }
+
+  // 2. Restrict to configured managerRoleId or Administrator permissions
+  const member = interaction.member;
+  const requiredRoleId = config.managerRoleId || '1469553313979699375';
+  const hasRole = member && member.roles.cache.has(requiredRoleId);
+  const isAdmin = member && member.permissions.has(PermissionFlagsBits.Administrator);
+
+  if (!hasRole && !isAdmin) {
+    if (interaction.isChatInputCommand()) {
+      return interaction.reply({
+        content: `❌ You do not have the required role (<@&${requiredRoleId}>) or Administrator permissions to manage deadlines.`,
+        ephemeral: true
+      });
+    }
+    if (interaction.isAutocomplete()) {
+      return interaction.respond([]).catch(() => {});
+    }
+    return;
+  }
+
+  // 3. Handle autocomplete requests for ID fields
   if (interaction.isAutocomplete()) {
     const subcommand = interaction.options.getSubcommand();
     if (subcommand === 'delete' || subcommand === 'edit') {

@@ -4,5 +4,6 @@
   "defaultPingRole": "everyone",
   "defaultCustomText": "🚨 **{title}** is coming up! Remaining: {relative_timestamp}",
   "schedulerIntervalMs": 60000,
-  "dashboardPort": 3000
+  "dashboardPort": 3000,
+  "managerRoleId": "1469553313979699375"
 }
