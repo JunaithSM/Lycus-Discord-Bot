@@ -33,8 +33,6 @@ const tabDocs = document.getElementById('tab-docs');
 
 // Stats Elements
 const statTotal = document.getElementById('stat-total');
-const statAlertTime = document.getElementById('stat-alert-time');
-const statTimezone = document.getElementById('stat-timezone');
 
 // Helper: Show Toast Notification
 function showToast(message) {
@@ -249,16 +247,6 @@ function renderDeadlines() {
 // Update stats dashboard overview cards
 function updateStats() {
   statTotal.textContent = deadlines.length;
-  
-  if (deadlines.length > 0) {
-    // Sort deadlines by date to find next one
-    const sorted = [...deadlines].sort((a, b) => new Date(a.targetDate) - new Date(b.targetDate));
-    statAlertTime.textContent = sorted[0].alertTime;
-    statTimezone.textContent = sorted[0].timezone;
-  } else {
-    statAlertTime.textContent = defaults.defaultAlertTime || '09:00';
-    statTimezone.textContent = defaults.defaultTimezone || 'Asia/Kolkata';
-  }
 }
 
 // Escape HTML characters to prevent XSS/raw tags injection in message preview
@@ -544,7 +532,16 @@ idInput.addEventListener('blur', () => {
 });
 
 // Real-time Discord preview live update event bindings
-titleInput.addEventListener('input', updateDiscordPreview);
+titleInput.addEventListener('input', () => {
+  if (formAction.value === 'create') {
+    idInput.value = titleInput.value
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9_-]/g, '-')
+      .replace(/-+/g, '-');
+  }
+  updateDiscordPreview();
+});
 dateInput.addEventListener('input', updateDiscordPreview);
 dateInput.addEventListener('change', updateDiscordPreview);
 selectRole.addEventListener('change', updateDiscordPreview);

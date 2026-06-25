@@ -18,8 +18,8 @@ try {
  */
 async function execute(interaction) {
   const { options } = interaction;
-  const rawId = options.getString('id');
   const title = options.getString('title');
+  const rawId = options.getString('id') || title;
   const rawDate = options.getString('date');
   const channel = options.getChannel('channel');
   const pingRole = options.getRole('ping_role');

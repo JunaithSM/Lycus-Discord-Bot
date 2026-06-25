@@ -69,7 +69,8 @@ async function checkDeadlines(client) {
         const [alertHour, alertMin] = deadline.alertTime.split(':').map(Number);
         const alertTimeToday = nowInTz.set({ hour: alertHour, minute: alertMin, second: 0, millisecond: 0 });
 
-        if (nowInTz >= alertTimeToday) {
+        const diffMinutes = targetDate.diff(nowInTz, 'minutes').minutes;
+        if (diffMinutes > 2 && nowInTz >= alertTimeToday) {
           console.log(`[Scheduler] Triggering daily alert/edit for: ${deadline.title} (${deadline.id})`);
 
           const channel = client.channels.cache.get(deadline.channelId) || 

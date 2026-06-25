@@ -10,10 +10,6 @@ const deadlineCommand = new SlashCommandBuilder()
       .setName('add')
       .setDescription('Create a new deadline')
       .addStringOption(option =>
-        option.setName('id')
-          .setDescription('Unique lowercase identifier (e.g., project-1)')
-          .setRequired(true))
-      .addStringOption(option =>
         option.setName('title')
           .setDescription('Display title of the deadline')
           .setRequired(true))
@@ -26,6 +22,9 @@ const deadlineCommand = new SlashCommandBuilder()
           .setDescription('Channel where daily alerts will be posted')
           .addChannelTypes(ChannelType.GuildText)
           .setRequired(true))
+      .addStringOption(option =>
+        option.setName('id')
+          .setDescription('Unique identifier (optional, auto-generated from title if omitted)'))
       .addRoleOption(option =>
         option.setName('ping_role')
           .setDescription('Role to ping (default: @everyone)'))
