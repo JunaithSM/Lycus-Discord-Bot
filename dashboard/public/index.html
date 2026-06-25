@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lycus Bot Dashboard</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+
+  <!-- Sidebar / Nav -->
+  <aside class="sidebar">
+    <div class="logo-area">
+      <span class="logo-icon">
+        <svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 2h14M5 22h14M19 2c0 6-3 9-7 9s-7-3-7-9M5 22c0-6 3-9 7-9s7 3 7 9" />
+        </svg>
+      </span>
+      <h1 class="logo-text">Lycus Bot</h1>
+    </div>
+    <nav class="nav-links">
+      <a href="#" class="nav-item active" id="nav-dashboard">
+        <span class="nav-icon">
+          <svg class="icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="9" rx="1" />
+            <rect x="14" y="3" width="7" height="5" rx="1" />
+            <rect x="14" y="12" width="7" height="9" rx="1" />
+            <rect x="3" y="16" width="7" height="5" rx="1" />
+          </svg>
+        </span> Dashboard
+      </a>
+      <a href="#" class="nav-item" id="nav-docs">
+        <span class="nav-icon">
+          <svg class="icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2zM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+          </svg>
+        </span> Documentation
+      </a>
+    </nav>
+    <div class="status-indicator">
+      <span class="status-dot online"></span>
+      <span class="status-label">Bot Online</span>
+    </div>
+  </aside>
+
+  <!-- Main Content Wrapper -->
+  <main class="main-content">
+
+    <!-- Tab: Dashboard -->
+    <div id="tab-dashboard" class="tab-content">
+      <header class="top-header">
+        <div>
+          <h2 class="page-title">Deadline Management</h2>
+          <p class="page-subtitle">Schedule, track, and alert countdowns to Discord channels.</p>
+        </div>
+        <button class="btn btn-primary" id="btn-show-add-panel">
+          <span class="btn-icon">+</span> New Deadline
+        </button>
+      </header>
+
+      <!-- Stats Section -->
+      <section class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-title">Total Deadlines</span>
+            <span class="stat-icon">
+              <svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="10" x2="21" y2="10" />
+              </svg>
+            </span>
+          </div>
+          <div class="stat-value" id="stat-total">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-title">Next Alert Time</span>
+            <span class="stat-icon">
+              <svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+            </span>
+          </div>
+          <div class="stat-value" id="stat-alert-time">09:00</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-title">Timezone</span>
+            <span class="stat-icon">
+              <svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 2a14.5 14.5 0 0 0 0 20M12 2a14.5 14.5 0 0 1 0 20M2 12h20" />
+              </svg>
+            </span>
+          </div>
+          <div class="stat-value" id="stat-timezone">Asia/Kolkata</div>
+        </div>
+      </section>
+
+      <!-- Content Split Area -->
+      <div class="content-layout">
+        <!-- Deadlines List Column -->
+        <section class="list-column">
+          <h3 class="section-title">Active Trackers</h3>
+          <div class="deadlines-container" id="deadlines-list">
+            <div class="empty-state">
+              <span class="empty-icon">
+                <svg class="icon" viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+                </svg>
+              </span>
+              <p class="empty-text">No active deadlines scheduled.</p>
+              <p class="empty-subtext">Click "New Deadline" to schedule one.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- Tab: Documentation -->
+    <div id="tab-docs" class="tab-content hidden">
+      <header class="top-header">
+        <div>
+          <h2 class="page-title">Documentation &amp; Guides</h2>
+          <p class="page-subtitle">Learn how to configure, customize, and manage countdown trackers.</p>
+        </div>
+      </header>
+
+      <div class="docs-container">
+        <!-- Section: Overview -->
+        <div class="docs-card">
+          <h3 class="docs-section-title">
+            <svg class="icon section-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="16" x2="12" y2="12" />
+              <line x1="12" y1="8" x2="12.01" y2="8" />
+            </svg> Overview
+          </h3>
+          <p class="docs-p">
+            Lycus Bot is a powerful deadline scheduling and tracking utility for Discord. It registers countdown trackers, announces daily alert posts, and updates them dynamically to keep your server members informed without channel spam.
+          </p>
+        </div>
+
+        <!-- Section: Commands -->
+        <div class="docs-card">
+          <h3 class="docs-section-title">
+            <svg class="icon section-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="4 17 10 11 4 5" />
+              <line x1="12" y1="19" x2="20" y2="19" />
+            </svg> Slash Commands
+          </h3>
+          <p class="docs-p">Use these slash commands inside your Discord server to manage deadlines dynamically:</p>
+          <table class="docs-table">
+            <thead>
+              <tr>
+                <th>Command</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>/deadline add</code></td>
+                <td>Create and schedule a new deadline tracker.</td>
+              </tr>
+              <tr>
+                <td><code>/deadline list</code></td>
+                <td>Display all active deadlines and their countdown values.</td>
+              </tr>
+              <tr>
+                <td><code>/deadline edit</code></td>
+                <td>Modify settings (channel, title, target date) of an existing tracker.</td>
+              </tr>
+              <tr>
+                <td><code>/deadline delete</code></td>
+                <td>Remove and cancel a scheduled countdown tracker.</td>
+              </tr>
+              <tr>
+                <td><code>/deadline help</code></td>
+                <td>Open the quick reference help guide inside Discord.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Section: Custom Alert Messages -->
+        <div class="docs-card">
+          <h3 class="docs-section-title">
+            <svg class="icon section-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="16 18 22 12 16 6" />
+              <polyline points="8 6 2 12 8 18" />
+            </svg> Message Placeholders
+          </h3>
+          <p class="docs-p">
+            You can customize the daily notification messages sent to your Discord channel. Insert these placeholders in the <b>Custom Alert Message</b> field to inject dynamic deadline properties:
+          </p>
+          <table class="docs-table">
+            <thead>
+              <tr>
+                <th>Placeholder</th>
+                <th>Discord Rendering</th>
+                <th>Example Output</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>{title}</code></td>
+                <td>Plain Text</td>
+                <td><code>Project Submission</code></td>
+              </tr>
+              <tr>
+                <td><code>{countdown}</code></td>
+                <td>Human-readable countdown duration</td>
+                <td><code>2 days, 5 hours, 30 minutes</code></td>
+              </tr>
+              <tr>
+                <td><code>{relative_timestamp}</code></td>
+                <td>Discord relative timestamp pill</td>
+                <td><code>in 2 days</code> (updates in real-time)</td>
+              </tr>
+              <tr>
+                <td><code>{full_timestamp}</code></td>
+                <td>Discord absolute date and time pill</td>
+                <td><code>Thursday, June 25, 2026 6:30 PM</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Section: Dynamic Editing -->
+        <div class="docs-card">
+          <h3 class="docs-section-title">
+            <svg class="icon section-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M23 4v6h-6" />
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+            </svg> Clean Channel Editing
+          </h3>
+          <p class="docs-p">
+            To prevent spamming channels with repeated alert pings, Lycus Bot uses an <b>edit-in-place system</b>. When a daily alert is triggered:
+          </p>
+          <ul class="docs-list">
+            <li>It checks if a message was already sent for that deadline.</li>
+            <li>If a message exists, it **edits the same message** to show the updated countdown.</li>
+            <li>It only sends a new message if the previous alert message was deleted or doesn't exist.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Panel Centered Modal -->
+    <section class="form-panel hidden" id="form-panel-container">
+      <div class="panel-header">
+        <h3 class="panel-title" id="panel-title-text">Add New Deadline</h3>
+        <button class="btn-close" id="btn-close-panel">&times;</button>
+      </div>
+      <form id="deadline-form" class="panel-form">
+        <input type="hidden" id="form-action" value="create">
+        <input type="hidden" id="deadline-original-id">
+
+        <!-- Left Column: Settings -->
+        <div class="modal-col-left">
+          <div class="form-group">
+            <label for="input-id">ID Slug</label>
+            <input type="text" id="input-id" required placeholder="project-submission" pattern="[a-z0-9\-]+" title="Lowercase letters, numbers, and hyphens only" autocomplete="off">
+            <span class="form-hint">Lowercase letters, numbers, hyphens only</span>
+          </div>
+
+          <div class="form-group">
+            <label for="input-title">Display Title</label>
+            <input type="text" id="input-title" required placeholder="Project Submission" minlength="2" maxlength="100">
+          </div>
+
+          <div class="form-group">
+            <label for="input-date">Target Date &amp; Time</label>
+            <input type="datetime-local" id="input-date" required>
+          </div>
+
+          <div class="form-group">
+            <label for="select-channel">Discord Channel</label>
+            <select id="select-channel" required>
+              <option value="" disabled selected>Select channel...</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="input-alert-time">Daily Alert Time</label>
+            <input type="time" id="input-alert-time" value="09:00">
+          </div>
+
+          <div class="form-group">
+            <label for="select-timezone">Timezone</label>
+            <select id="select-timezone">
+              <option value="Asia/Kolkata">Asia/Kolkata (IST)</option>
+              <option value="UTC">UTC</option>
+              <option value="America/New_York">America/New_York (ET)</option>
+              <option value="America/Chicago">America/Chicago (CT)</option>
+              <option value="America/Denver">America/Denver (MT)</option>
+              <option value="America/Los_Angeles">America/Los_Angeles (PT)</option>
+              <option value="Europe/London">Europe/London (GMT/BST)</option>
+              <option value="Europe/Paris">Europe/Paris (CET)</option>
+              <option value="Europe/Berlin">Europe/Berlin (CET)</option>
+              <option value="Asia/Tokyo">Asia/Tokyo (JST)</option>
+              <option value="Asia/Shanghai">Asia/Shanghai (CST)</option>
+              <option value="Asia/Dubai">Asia/Dubai (GST)</option>
+              <option value="Australia/Sydney">Australia/Sydney (AEST)</option>
+              <option value="Pacific/Auckland">Pacific/Auckland (NZST)</option>
+            </select>
+          </div>
+
+          <div class="form-group span-all">
+            <label for="select-role">Ping Target</label>
+            <select id="select-role">
+              <option value="everyone">@everyone</option>
+              <option value="none">None</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Right Column: Editor & Preview -->
+        <div class="modal-col-right">
+          <div class="form-group">
+            <label for="textarea-custom-text">Custom Alert Message</label>
+            <!-- Editing Markdown & Placeholders Toolbar -->
+            <div class="message-toolbar">
+              <div class="toolbar-group">
+                <button type="button" class="toolbar-btn" data-action="placeholder" data-value="{title}" title="Insert Display Title">{Title}</button>
+                <button type="button" class="toolbar-btn" data-action="placeholder" data-value="{countdown}" title="Insert Countdown">{Countdown}</button>
+                <button type="button" class="toolbar-btn" data-action="placeholder" data-value="{relative_timestamp}" title="Insert Relative Date">{Relative Time}</button>
+                <button type="button" class="toolbar-btn" data-action="placeholder" data-value="{full_timestamp}" title="Insert Full Date">{Full Date}</button>
+              </div>
+              <div class="toolbar-separator"></div>
+              <div class="toolbar-group">
+                <button type="button" class="toolbar-btn" data-action="format" data-value="**" title="Bold Selection"><b>B</b></button>
+                <button type="button" class="toolbar-btn" data-action="format" data-value="*" title="Italic Selection"><i>I</i></button>
+                <button type="button" class="toolbar-btn" data-action="format" data-value="__" title="Underline Selection"><u>U</u></button>
+                <button type="button" class="toolbar-btn" data-action="format" data-value="~~" title="Strikethrough Selection"><s>S</s></button>
+                <button type="button" class="toolbar-btn" data-action="format" data-value="`" title="Code Block"><code>Code</code></button>
+              </div>
+            </div>
+            <textarea id="textarea-custom-text" rows="3" placeholder="🚨 **{title}** is coming up! Remaining: {relative_timestamp}"></textarea>
+            <span class="form-hint">Use toolbar buttons to format selection or insert placeholders.</span>
+          </div>
+
+          <div class="form-group">
+            <label>Discord Message Preview</label>
+            <div class="discord-preview-container">
+              <div class="discord-message">
+                <div class="discord-avatar-wrapper">
+                  <img src="images/Lycus logo.png" alt="Lycus Logo">
+                </div>
+                <div class="discord-content">
+                  <div class="discord-header">
+                    <span class="discord-bot-name">Lycus</span>
+                    <span class="discord-bot-tag">APP</span>
+                    <span class="discord-timestamp" id="discord-preview-timestamp">Today at 00:00</span>
+                  </div>
+                  <div class="discord-body" id="discord-message-body"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" id="btn-cancel-form">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="btn-submit-form">Save Tracker</button>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <!-- Modal Backdrop overlay -->
+    <div class="modal-backdrop" id="modal-backdrop"></div>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

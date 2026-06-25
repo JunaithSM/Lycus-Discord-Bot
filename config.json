@@ -1,0 +1,8 @@
+{
+  "defaultTimezone": "Asia/Kolkata",
+  "defaultAlertTime": "09:00",
+  "defaultPingRole": "everyone",
+  "defaultCustomText": "🚨 **{title}** is coming up! Remaining: {relative_timestamp}",
+  "schedulerIntervalMs": 60000,
+  "dashboardPort": 3000
+}
