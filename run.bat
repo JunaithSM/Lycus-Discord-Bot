@@ -1,83 +1,225 @@
 @echo off
 title Lycus Bot - Launcher
 setlocal enabledelayedexpansion
+chcp 65001 >nul 2>nul
 
 echo ====================================================
 echo             Lycus Discord Bot Launcher
 echo ====================================================
 echo.
 
-:: 1. Check if Node.js is installed
+:: ── 1. Must be run from the correct folder ────────────────────────────────────
+:: Ensure package.json exists so npm commands work
+if not exist "%~dp0package.json" (
+    echo [ERROR] Could not find the bot files in this folder.
+    echo.
+    echo Please make sure you placed run.bat in the SAME folder as package.json.
+    echo Example correct location:  C:\LycusBot\run.bat
+    echo.
+    pause
+    exit /b 1
+)
+
+:: Change to the folder where the .bat file lives (handles drag-and-drop launching)
+cd /d "%~dp0"
+
+:: ── 2. Check if Node.js is installed ─────────────────────────────────────────
 where node >nul 2>nul
 if %errorlevel% neq 0 (
     echo [!] Node.js is NOT installed on this system.
-    echo [i] Attempting to install Node.js automatically via Windows Package Manager (winget)...
+    echo [i] Trying to install it automatically...
     echo.
-    
+
     where winget >nul 2>nul
     if %errorlevel% neq 0 (
-        echo [ERROR] Windows Package Manager (winget) was not found. 
-        echo Please download and install Node.js manually from: https://nodejs.org/
-        echo After installing, double-click this script again.
+        echo [ERROR] Automatic install is not available on your Windows version.
+        echo.
+        echo Please do the following:
+        echo   1. Open your browser and go to:  https://nodejs.org/
+        echo   2. Click the big green "LTS" download button
+        echo   3. Run the installer and click Next on every screen
+        echo   4. After it finishes, double-click run.bat again
+        echo.
         pause
-        exit /b
+        exit /b 1
     )
-    
-    :: Install Node.js LTS via winget
+
+    echo [i] Installing Node.js via Windows Package Manager. This may take a minute...
+    echo     Please do NOT close this window.
+    echo.
     winget install --id OpenJS.NodeJS.LTS -e --accept-source-agreements --accept-package-agreements
     if !errorlevel! neq 0 (
         echo.
-        echo [ERROR] Automatic installation failed or was cancelled.
-        echo Please download and install Node.js manually from: https://nodejs.org/
+        echo [ERROR] Automatic install failed.
+        echo.
+        echo Please do the following manually:
+        echo   1. Open your browser and go to:  https://nodejs.org/
+        echo   2. Click the big green "LTS" download button
+        echo   3. Run the installer ^(click Next on every screen^)
+        echo   4. Restart your computer, then double-click run.bat again
+        echo.
         pause
-        exit /b
+        exit /b 1
     )
-    
+
     echo.
-    echo [SUCCESS] Node.js has been successfully installed!
-    echo [!] IMPORTANT: You MUST close this window and double-click run.bat again to start.
+    echo [SUCCESS] Node.js installed!
+    echo.
+    echo IMPORTANT: Close this window and double-click run.bat again to start the bot.
     echo.
     pause
-    exit /b
+    exit /b 0
 )
 
-echo [OK] Node.js is installed.
+:: Verify node actually runs (PATH can be stale after a fresh install)
+node --version >nul 2>nul
+if %errorlevel% neq 0 (
+    echo [ERROR] Node.js was found but could not be launched.
+    echo.
+    echo Please restart your computer and then double-click run.bat again.
+    echo.
+    pause
+    exit /b 1
+)
+
+for /f "tokens=*" %%v in ('node --version 2^>nul') do set NODE_VER=%%v
+echo [OK] Node.js is installed  (%NODE_VER%)
 echo.
 
-:: 2. Check/Create .env file
-if not exist .env (
-    echo [i] Configuration file (.env) not found. Let's set it up.
+:: ── 3. Verify npm is available ────────────────────────────────────────────────
+where npm >nul 2>nul
+if %errorlevel% neq 0 (
+    echo [ERROR] npm was not found even though Node.js is installed.
     echo.
-    set /p token="Enter your Discord Bot Token: "
-    
-    :: Clean quotes if user pasted them
+    echo Please restart your computer and double-click run.bat again.
+    echo If this keeps happening, reinstall Node.js from https://nodejs.org/
+    echo.
+    pause
+    exit /b 1
+)
+
+:: ── 4. Check / Create .env file ───────────────────────────────────────────────
+if not exist ".env" (
+    echo [i] First-time setup: your bot token is needed.
+    echo.
+    echo Where to find your token:
+    echo   1. Go to https://discord.com/developers/applications
+    echo   2. Open your application, click "Bot" on the left
+    echo   3. Click "Reset Token", copy the long string of letters and numbers
+    echo.
+
+    :ask_token
+    set "token="
+    set /p token="Paste your Discord Bot Token here and press Enter: "
+
+    :: Strip any accidental surrounding quotes
     set "token=!token:"=!"
-    
-    echo DISCORD_TOKEN="!token!" > .env
-    echo [OK] Configuration saved to .env.
+
+    :: Strip leading/trailing spaces
+    for /f "tokens=* delims= " %%a in ("!token!") do set "token=%%a"
+
+    if "!token!"=="" (
+        echo.
+        echo [!] You did not enter a token. Please try again.
+        echo.
+        goto ask_token
+    )
+
+    :: Rough length check — real tokens are 59–72 characters
+    set "len=0"
+    set "tmp=!token!"
+    :count_loop
+        if "!tmp!"=="" goto count_done
+        set "tmp=!tmp:~1!"
+        set /a len+=1
+        goto count_loop
+    :count_done
+
+    if !len! LSS 40 (
+        echo.
+        echo [!] That looks too short to be a real token ^(!len! characters^).
+        echo     A Discord token is usually 59-72 characters long.
+        echo     Please double-check and try again.
+        echo.
+        goto ask_token
+    )
+
+    :: Write .env  (no surrounding quotes in the file — dotenv handles it fine)
+    echo DISCORD_TOKEN=!token!> .env
+
+    echo.
+    echo [OK] Token saved.
     echo.
 ) else (
-    echo [OK] Configuration file (.env) found.
+    :: Validate that the existing .env actually contains a token value
+    set "env_ok=0"
+    for /f "usebackq tokens=1,* delims==" %%a in (".env") do (
+        if /i "%%a"=="DISCORD_TOKEN" (
+            if not "%%b"=="" set "env_ok=1"
+        )
+    )
+    if "!env_ok!"=="0" (
+        echo [WARNING] .env file exists but DISCORD_TOKEN is missing or empty.
+        echo Deleting it so you can enter the token again...
+        del ".env" >nul 2>nul
+        echo.
+        goto ask_token
+    )
+    echo [OK] Configuration file found.
 )
+echo.
 
-:: 3. Install/Update Dependencies
-echo [i] Installing/updating bot dependencies...
-call npm install
+:: ── 5. Install / Update Dependencies ─────────────────────────────────────────
+echo [i] Installing bot dependencies. This may take a minute on first run...
+echo     Please do NOT close this window.
+echo.
+
+call npm install --loglevel=error 2>&1
 if %errorlevel% neq 0 (
     echo.
-    echo [ERROR] Failed to install dependencies. Please ensure you are connected to the internet.
+    echo [ERROR] Failed to install dependencies.
+    echo.
+    echo Common fixes:
+    echo   - Make sure you are connected to the internet
+    echo   - Temporarily disable your antivirus and try again
+    echo   - Right-click run.bat and choose "Run as administrator"
+    echo.
     pause
-    exit /b
+    exit /b 1
 )
-echo [OK] Dependencies ready.
+echo.
+echo [OK] Dependencies are ready.
 echo.
 
-:: 4. Start the Bot
-echo [i] Starting Lycus Bot...
+:: ── 6. Start the Bot ──────────────────────────────────────────────────────────
+:start_bot
+echo ====================================================
+echo  Lycus Bot is starting... Do NOT close this window.
+echo  To stop the bot, press Ctrl + C
+echo ====================================================
 echo.
+
 call npm start
-if %errorlevel% neq 0 (
+set EXIT_CODE=%errorlevel%
+
+echo.
+if %EXIT_CODE% equ 0 (
+    echo [i] The bot shut down normally.
+) else (
+    echo [ERROR] The bot stopped unexpectedly ^(exit code %EXIT_CODE%^).
     echo.
-    echo [i] Bot stopped or crashed.
-    pause
+    echo What to try:
+    echo   1. Make sure your bot token in .env is correct
+    echo      ^(delete .env and run this script again to re-enter it^)
+    echo   2. Check that your bot is properly set up at:
+    echo      https://discord.com/developers/applications
+    echo   3. Make sure your computer has internet access
+    echo.
+    echo The bot will restart in 5 seconds...
+    echo Press Ctrl+C NOW if you want to stop it.
+    echo.
+    timeout /t 5 >nul
+    goto start_bot
 )
+
+pause
