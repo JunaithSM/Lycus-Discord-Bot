@@ -20,7 +20,18 @@ A customizable Discord bot built with **Node.js** and **discord.js** (v14) to sc
 
 ## Setup & Running
 
-### 1. Configure Credentials & Settings
+### 🚀 Easy Windows Setup (Zero Coding Knowledge)
+If you are running on Windows, you can set up and run everything in one click:
+1. Double-click the **`run.bat`** file in the root directory.
+2. If Node.js is missing, the script will automatically install it via the Windows Package Manager (`winget`).
+3. If it's your first run, it will prompt you in the console to paste your Discord Bot Token and automatically initialize the config.
+4. It will then download dependencies and launch the bot and web dashboard.
+
+---
+
+### 💻 Manual Setup & Running (Linux, macOS, Windows)
+
+#### 1. Configure Credentials & Settings
 - **Token**: Add your Discord Bot Token to the `.env` file in the root directory:
   ```env
   DISCORD_TOKEN="YOUR_BOT_TOKEN_HERE"
@@ -45,12 +56,12 @@ A customizable Discord bot built with **Node.js** and **discord.js** (v14) to sc
   - `schedulerIntervalMs`: Frequency (in milliseconds) the bot checks deadlines.
   - `dashboardPort`: The local port the web dashboard runs on (defaults to `3000`).
 
-### 2. Install Dependencies
+#### 2. Install Dependencies
 ```bash
 npm install
 ```
 
-### 3. Run the Bot
+#### 3. Run the Bot
 ```bash
 node index.js
 ```
