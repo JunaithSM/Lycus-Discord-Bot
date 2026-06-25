@@ -81,6 +81,7 @@ Add a new deadline.
 - `alert_time` (Optional): Daily time to ping the channel (format: `HH:MM`, defaults to `09:00`).
 - `custom_text` (Optional): Custom message template (e.g. `🚨 **{title}** is due! {relative_timestamp}`).
 - `timezone` (Optional): Timezone name (defaults to `Asia/Kolkata`).
+- `update_type` (Optional): Alert mode type. Use `edit` to edit the same message daily (default, keeps channel clean) or `create` to send a new message every day.
 
 ### `/deadline list`
 Lists all active deadlines, including active countdowns, target channels, and schedule details.
@@ -88,7 +89,7 @@ Lists all active deadlines, including active countdowns, target channels, and sc
 ### `/deadline edit`
 Modify an existing deadline.
 - `id` (Required): The identifier of the deadline to edit (with autocomplete support).
-- Supports editing `title`, `date`, `channel`, `ping_role`, `alert_time`, `custom_text`, `timezone`.
+- Supports editing `title`, `date`, `channel`, `ping_role`, `alert_time`, `custom_text`, `timezone`, `update_type`.
 - To completely disable daily alerts pings, set the `disable_ping` parameter to `True`.
 
 ### `/deadline delete`

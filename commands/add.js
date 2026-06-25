@@ -26,6 +26,7 @@ async function execute(interaction) {
   const alertTime = options.getString('alert_time') || config.defaultAlertTime;
   const customText = options.getString('custom_text');
   const tz = options.getString('timezone') || config.defaultTimezone;
+  const updateType = options.getString('update_type') || 'edit';
 
   const id = db.normalizeId(rawId);
 
@@ -76,7 +77,8 @@ async function execute(interaction) {
       channelId: channel.id,
       pingRole: pingRoleId,
       customText,
-      alertTime
+      alertTime,
+      updateType
     });
 
     const targetTimestamp = Math.floor(parsedDate.toSeconds());
@@ -89,7 +91,8 @@ async function execute(interaction) {
         { name: 'Target Date', value: `<t:${targetTimestamp}:F> (<t:${targetTimestamp}:R>)`, inline: true },
         { name: 'Target Channel', value: `<#${newDeadline.channelId}>`, inline: true },
         { name: 'Daily Alert Time', value: `\`${newDeadline.alertTime}\` (${newDeadline.timezone})`, inline: true },
-        { name: 'Ping Target', value: newDeadline.pingRole === 'everyone' ? '@everyone' : `<@&${newDeadline.pingRole}>`, inline: true }
+        { name: 'Ping Target', value: newDeadline.pingRole === 'everyone' ? '@everyone' : `<@&${newDeadline.pingRole}>`, inline: true },
+        { name: 'Update Mode', value: newDeadline.updateType === 'create' ? 'Create New Message' : 'Edit Message', inline: true }
       )
       .setFooter({ text: 'Antigravity Deadline Alert Bot' })
       .setTimestamp();

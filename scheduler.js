@@ -41,7 +41,7 @@ async function checkDeadlines(client) {
           const finalContent = `${pingText}🎉 **${deadline.title}** has reached its deadline!`;
           
           let messageEdited = false;
-          if (deadline.lastMessageId) {
+          if (deadline.updateType !== 'create' && deadline.lastMessageId) {
             try {
               const existingMsg = await channel.messages.fetch(deadline.lastMessageId);
               if (existingMsg) {
@@ -90,7 +90,7 @@ async function checkDeadlines(client) {
             const content = `${pingText}${msg}`;
 
             let alertMessage = null;
-            if (deadline.lastMessageId) {
+            if (deadline.updateType !== 'create' && deadline.lastMessageId) {
               try {
                 const existingMsg = await channel.messages.fetch(deadline.lastMessageId);
                 if (existingMsg) {

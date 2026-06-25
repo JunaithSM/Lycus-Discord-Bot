@@ -38,6 +38,13 @@ const deadlineCommand = new SlashCommandBuilder()
       .addStringOption(option =>
         option.setName('timezone')
           .setDescription('Timezone name (default: Asia/Kolkata)'))
+      .addStringOption(option =>
+        option.setName('update_type')
+          .setDescription('Whether to edit the existing alert or create a new one each time (default: edit)')
+          .addChoices(
+            { name: 'Edit Message', value: 'edit' },
+            { name: 'Create New Message', value: 'create' }
+          ))
   )
   .addSubcommand(subcommand =>
     subcommand
@@ -85,6 +92,13 @@ const deadlineCommand = new SlashCommandBuilder()
       .addStringOption(option =>
         option.setName('timezone')
           .setDescription('New timezone name'))
+      .addStringOption(option =>
+        option.setName('update_type')
+          .setDescription('New update type preference: edit existing or create new message')
+          .addChoices(
+            { name: 'Edit Message', value: 'edit' },
+            { name: 'Create New Message', value: 'create' }
+          ))
   )
   .addSubcommand(subcommand =>
     subcommand

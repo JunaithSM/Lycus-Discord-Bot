@@ -23,6 +23,7 @@ const selectRole = document.getElementById('select-role');
 const alertTimeInput = document.getElementById('input-alert-time');
 const timezoneInput = document.getElementById('select-timezone');
 const customTextInput = document.getElementById('textarea-custom-text');
+const selectUpdateType = document.getElementById('select-update-type');
 
 // Navigation Tabs Elements
 const navDashboard = document.getElementById('nav-dashboard');
@@ -217,6 +218,10 @@ function renderDeadlines() {
           <span class="detail-label">Timezone</span>
           <span class="detail-value">${d.timezone}</span>
         </div>
+        <div class="detail-item">
+          <span class="detail-label">Alert Mode</span>
+          <span class="detail-value">${d.updateType === 'create' ? 'New Message' : 'Edit Message'}</span>
+        </div>
       </div>
       <div class="card-actions">
         <button class="btn btn-secondary btn-edit" data-id="${d.id}">Edit</button>
@@ -387,6 +392,7 @@ function openAddPanel() {
   alertTimeInput.value = defaults.defaultAlertTime || '09:00';
   timezoneInput.value = defaults.defaultTimezone || 'Asia/Kolkata';
   customTextInput.value = defaults.defaultCustomText || '';
+  selectUpdateType.value = 'edit';
 
   updateDiscordPreview();
   formPanel.classList.remove('hidden');
@@ -420,6 +426,7 @@ function openEditPanel(id) {
   alertTimeInput.value = d.alertTime;
   timezoneInput.value = d.timezone;
   customTextInput.value = d.customText;
+  selectUpdateType.value = d.updateType || 'edit';
 
   updateDiscordPreview();
   formPanel.classList.remove('hidden');
@@ -468,7 +475,8 @@ deadlineForm.addEventListener('submit', async (e) => {
     pingRole: selectRole.value,
     alertTime: alertTimeInput.value.trim() || undefined,
     timezone: timezoneInput.value.trim() || undefined,
-    customText: customTextInput.value.trim() || undefined
+    customText: customTextInput.value.trim() || undefined,
+    updateType: selectUpdateType.value
   };
 
   try {

@@ -239,15 +239,14 @@
             <svg class="icon section-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M23 4v6h-6" />
               <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
-            </svg> Clean Channel Editing
+            </svg> Alert Message Modes
           </h3>
           <p class="docs-p">
-            To prevent spamming channels with repeated alert pings, Lycus Bot uses an <b>edit-in-place system</b>. When a daily alert is triggered:
+            Lycus Bot offers two daily notification delivery modes depending on how you want to manage your Discord channels:
           </p>
           <ul class="docs-list">
-            <li>It checks if a message was already sent for that deadline.</li>
-            <li>If a message exists, it **edits the same message** to show the updated countdown.</li>
-            <li>It only sends a new message if the previous alert message was deleted or doesn't exist.</li>
+            <li><b>Edit Existing Message (Default)</b>: To prevent spamming channels with repeated alert pings, the bot checks if a message was already sent for that deadline and edits the existing message to show the updated countdown.</li>
+            <li><b>Send New Message Every Time</b>: Keeps a permanent history of daily countdown alert messages in the channel by sending a brand new message each day instead of editing the previous one.</li>
           </ul>
         </div>
       </div>
@@ -318,6 +317,14 @@
             <select id="select-role">
               <option value="everyone">@everyone</option>
               <option value="none">None</option>
+            </select>
+          </div>
+
+          <div class="form-group span-all">
+            <label for="select-update-type">Alert Mode (Daily Countdown Message)</label>
+            <select id="select-update-type" required>
+              <option value="edit">Edit Existing Message (Keeps channel clean)</option>
+              <option value="create">Send New Message Every Time (Keeps alert history)</option>
             </select>
           </div>
         </div>

@@ -29,6 +29,7 @@ async function execute(interaction) {
   const alertTime = options.getString('alert_time');
   const customText = options.getString('custom_text');
   const tz = options.getString('timezone');
+  const updateType = options.getString('update_type');
 
   // 1. Process timezone first (needed for date validation)
   if (tz) {
@@ -101,6 +102,12 @@ async function execute(interaction) {
   if (customText) {
     updates.customText = customText;
     changesText.push(`• **Custom Text**: \`${customText}\``);
+  }
+
+  // 8. Process update type
+  if (updateType) {
+    updates.updateType = updateType;
+    changesText.push(`• **Update Mode**: ${updateType === 'create' ? 'Create New Message' : 'Edit Message'}`);
   }
 
   // Verify if anything actually changed

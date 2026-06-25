@@ -84,6 +84,7 @@ function addDeadline(deadline) {
     pingRole: deadline.pingRole || config.defaultPingRole,
     customText: deadline.customText || config.defaultCustomText,
     alertTime: deadline.alertTime || config.defaultAlertTime,
+    updateType: deadline.updateType || 'edit', // 'edit' or 'create'
     lastAlertDate: '', // YYYY-MM-DD format of the last sent alert
     lastMessageId: '' // ID of the last sent countdown message
   };

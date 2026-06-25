@@ -78,7 +78,7 @@ function startWebServer(client) {
 
   // REST API: Create a new deadline
   app.post('/api/deadlines', (req, res) => {
-    const { id, title, date, channelId, pingRole, alertTime, customText, timezone } = req.body;
+    const { id, title, date, channelId, pingRole, alertTime, customText, timezone, updateType } = req.body;
 
     if (!id || !title || !date || !channelId) {
       return res.status(400).json({ error: 'Missing required fields: id, title, date, channelId' });
@@ -116,7 +116,8 @@ function startWebServer(client) {
         channelId,
         pingRole: pingRole || config.defaultPingRole,
         customText: customText || config.defaultCustomText,
-        alertTime: alertTimeVal
+        alertTime: alertTimeVal,
+        updateType: updateType || 'edit'
       });
       res.status(201).json(newDeadline);
     } catch (err) {
@@ -139,6 +140,7 @@ function startWebServer(client) {
     if (body.channelId !== undefined) updates.channelId = body.channelId;
     if (body.pingRole !== undefined) updates.pingRole = body.pingRole;
     if (body.customText !== undefined) updates.customText = body.customText;
+    if (body.updateType !== undefined) updates.updateType = body.updateType;
 
     if (body.timezone !== undefined) {
       if (!DateTime.now().setZone(body.timezone).isValid) {
